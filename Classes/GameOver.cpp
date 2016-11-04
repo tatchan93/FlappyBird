@@ -1,5 +1,7 @@
 #include "GameOver.h"
-
+#include "IntroScene.h"
+#include "PlayGame.h"
+#include "UI/CocosGUI.h"
 USING_NS_CC;
 
 Scene* GameOver::createScene()
@@ -30,7 +32,29 @@ bool GameOver::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+	auto overPanel = Sprite::create("gameover.jpg");
+	overPanel->setPosition(visibleSize / 2);
+	this->addChild(overPanel);
+
+	auto menuPlay = ui::Button::create("button.jpg");
+	menuPlay->setPosition(Vec2(origin.x + visibleSize.width - menuPlay->getContentSize().width,
+		origin.y + menuPlay->getContentSize().height));
+	menuPlay->setTitleText("Replay");
+	menuPlay->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type)
+	{
+		switch (type)
+		{
+		     case ui::Widget::TouchEventType::BEGAN:
+				break;
+		     case ui::Widget::TouchEventType::ENDED:
+				 auto introscene = IntroScene::createScene();
+				 Director::getInstance()->replaceScene(introscene);
+				break;
+		}
+	});
+	this->addChild(menuPlay);
+
+
 
     return true;
 }
-
