@@ -27,6 +27,8 @@ bool IntroScene::init()
     {
         return false;
     }
+
+	gameScore = 0;
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -57,10 +59,12 @@ bool IntroScene::init()
 	touchListener->onTouchBegan = CC_CALLBACK_2(IntroScene::OnTouchBegan, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
+	auto contactListener = EventListenerPhysicsContact::create();
+	contactListener->onContactBegin = CC_CALLBACK_1(IntroScene::OnContactBegan, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 
-
-	this->schedule(schedule_selector(IntroScene::update), 0.1);
-	this->schedule(schedule_selector(IntroScene::CreatPipe), 0.005*visibleSize.width);
+	this->scheduleUpdate();
+	this->schedule(schedule_selector(IntroScene::CreatPipe), 0.0025*visibleSize.width);
     
     return true;
 }
@@ -99,7 +103,7 @@ void IntroScene::CreatPipe(float dt)
 
 	auto topPipePosition = visibleSize.height*random + topPipe->getContentSize().height / 2;
 	topPipe->setPosition(Vec2(visibleSize.width + topPipe->getContentSize().width, topPipePosition));
-	botPipe->setPosition(Vec2(topPipe->getPositionX(), topPipePosition - bird->getContentSize().height * 5
+	botPipe->setPosition(Vec2(topPipe->getPositionX(), topPipePosition - bird->getContentSize().height * 4
 		- topPipe->getContentSize().height));
 
 	this->addChild(topPipe);
@@ -112,8 +116,8 @@ void IntroScene::CreatPipe(float dt)
 
 	auto pointNode = Node::create();
 	pointNode->setPosition(Vec2(topPipe->getPositionX(), topPipe->getPositionY() - topPipe->getContentSize().height / 2
-		- (bird->getContentSize().height * 5) / 2));
-	auto nodePhysic = PhysicsBody::createBox(Size(1, bird->getContentSize().height*5));
+		- (bird->getContentSize().height * 4) / 2));
+	auto nodePhysic = PhysicsBody::createBox(Size(1, bird->getContentSize().height*4));
 	nodePhysic->setCollisionBitmask(3);
 	nodePhysic->setContactTestBitmask(true);
 	nodePhysic->setDynamic(false);
@@ -124,16 +128,40 @@ void IntroScene::CreatPipe(float dt)
 	this->addChild(pointNode);
 }
 
+bool IntroScene::OnContactBegan(const cocos2d::PhysicsContact &contact)
+{
+	PhysicsBody *shapeA  = contact.getShapeA()->getBody();
+	PhysicsBody *shapeB = contact.getShapeB()->getBody();
+	if (shapeA->getCollisionBitmask() == 3 && shapeB->getCollisionBitmask() == 4 ||
+		shapeA->getCollisionBitmask() == 4 && shapeB->getCollisionBitmask() == 3)
+	{
+		++score;
+		__String *teapScore = __String::createWithFormat("%i", score);
+		label->setString(teapScore->getCString());
+		gameScore = score; 
+	}
+	else
+	{
+		if (shapeA->getCollisionBitmask() == 4 && shapeB->getCollisionBitmask() == 2 ||
+			shapeA->getCollisionBitmask() == 2 && shapeB->getCollisionBitmask() == 4);
+		{
+			auto gameoverScene = GameOver::createScene();
+			Director::getInstance()->replaceScene(gameoverScene);
+		}
+	}
+	return true;
+}
+
 void IntroScene::update(float dt)
 {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	if (isFalling == true)
 	{
-		bird->setPosition(visibleSize.width / 2, bird->getPositionY() - visibleSize.height*0.025);
+		bird->setPosition(visibleSize.width / 2, bird->getPositionY() - visibleSize.height*0.0025);
 	}
 	else
 	{
-		bird->setPosition(visibleSize.width / 2, bird->getPositionY() + visibleSize.height*0.025);
+		bird->setPosition(visibleSize.width / 2, bird->getPositionY() + visibleSize.height*0.05);
 	}
 }
 
@@ -145,7 +173,7 @@ void IntroScene::stopFly(float dt)
 bool IntroScene::OnTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event)
 {
 	isFalling = false;
-	this->schedule(schedule_selector(IntroScene::stopFly, 0.5));
+	this->schedule(schedule_selector(IntroScene::stopFly, 0.5f));
 	return true;
 }
 
