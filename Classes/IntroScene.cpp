@@ -1,12 +1,16 @@
 #include "IntroScene.h"
 #include "GameOver.h"
+#include "SimpleAudioEngine.h"
+#include "ui/CocosGUI.h"
+
 USING_NS_CC;
 using namespace std;
+using namespace ui;
 Scene* IntroScene::createScene()
 {
     // 'scene' is an autorelease object
     auto scene = Scene::createWithPhysics();
-	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_NONE);
 	scene->getPhysicsWorld()->setGravity(Vec2(0,0));
     // 'layer' is an autorelease object
     auto layer = IntroScene::create();
@@ -28,14 +32,13 @@ bool IntroScene::init()
         return false;
     }
 
-	gameScore = 0;
-    
+
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	__String *teapScore = __String::createWithFormat("%i", score);
 	label = Label::createWithTTF(teapScore->getCString(), "fonts/Marker Felt.ttf", visibleSize.height*0.1);
-	label->setPosition(Vec2(origin.x + label->getContentSize().width, origin.y + visibleSize.height - label->getContentSize().height));
+	label->setPosition(Vec2(origin.x + label->getContentSize().width*2, origin.y + visibleSize.height - label->getContentSize().height));
 	label->setColor(Color3B::RED);
 	this->addChild(label);
 
@@ -135,22 +138,26 @@ bool IntroScene::OnContactBegan(const cocos2d::PhysicsContact &contact)
 	if (shapeA->getCollisionBitmask() == 3 && shapeB->getCollisionBitmask() == 4 ||
 		shapeA->getCollisionBitmask() == 4 && shapeB->getCollisionBitmask() == 3)
 	{
+		CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("point.mp3");
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("point.mp3", false, 1.0f, 1.0f, 1.0f);
 		++score;
 		__String *teapScore = __String::createWithFormat("%i", score);
 		label->setString(teapScore->getCString());
-		gameScore = score; 
 	}
 	else
 	{
+		CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("hit.mp3");
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("hit.mp3", false, 1.0f, 1.0f, 1.0f);
 		if (shapeA->getCollisionBitmask() == 4 && shapeB->getCollisionBitmask() == 2 ||
 			shapeA->getCollisionBitmask() == 2 && shapeB->getCollisionBitmask() == 4);
 		{
-			auto gameoverScene = GameOver::createScene();
+			auto gameoverScene = GameOver::createScene(score);
 			Director::getInstance()->replaceScene(gameoverScene);
 		}
 	}
 	return true;
 }
+
 
 void IntroScene::update(float dt)
 {
@@ -173,6 +180,8 @@ void IntroScene::stopFly(float dt)
 bool IntroScene::OnTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event)
 {
 	isFalling = false;
+	CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("wing.mp3");
+	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("wing.mp3", false, 1.0f, 1.0f, 1.0f);
 	this->schedule(schedule_selector(IntroScene::stopFly, 0.5f));
 	return true;
 }
