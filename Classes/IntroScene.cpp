@@ -16,6 +16,7 @@ Scene* IntroScene::createScene()
     auto layer = IntroScene::create();
 	layer->setPhysicWorld(scene->getPhysicsWorld());
     // add layer as a child to scene
+
     scene->addChild(layer);
 
     // return the scene
@@ -37,10 +38,15 @@ bool IntroScene::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	__String *teapScore = __String::createWithFormat("%i", score);
-	label = Label::createWithTTF(teapScore->getCString(), "fonts/Marker Felt.ttf", visibleSize.height*0.1);
-	label->setPosition(Vec2(origin.x + label->getContentSize().width*2, origin.y + visibleSize.height - label->getContentSize().height));
+	label = Label::createWithTTF(teapScore->getCString(), "fonts/Marker Felt.ttf", 30);
+	label->setPosition(Vec2(origin.x + label->getContentSize().width*3, origin.y + visibleSize.height - 2.5*label->getContentSize().height));
 	label->setColor(Color3B::RED);
 	this->addChild(label);
+
+	auto label1 = Label::createWithTTF("Score", "fonts/Marker Felt.ttf", 30);
+	label1->setPosition(Vec2(origin.x + label->getContentSize().width * 3, origin.y + visibleSize.height - label->getContentSize().height));
+	label1->setColor(Color3B::RED);
+	this->addChild(label1);
 
 	bird = Sprite::create("chim.png");
 	bird->setPosition(visibleSize / 2);
@@ -65,6 +71,21 @@ bool IntroScene::init()
 	auto contactListener = EventListenerPhysicsContact::create();
 	contactListener->onContactBegin = CC_CALLBACK_1(IntroScene::OnContactBegan, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+
+	auto pause = Button::create("pause.png");
+	pause->setPosition(Vec2(670, 470));
+	pause->addTouchEventListener([&](Ref *sender, Widget::TouchEventType type)
+	{
+		switch (type)
+		{
+		case cocos2d::ui::Widget::TouchEventType::BEGAN:
+			break;
+		case cocos2d::ui::Widget::TouchEventType::ENDED:
+			break;
+
+		}
+	});
+	this->addChild(pause);
 
 	this->scheduleUpdate();
 	this->schedule(schedule_selector(IntroScene::CreatPipe), 0.0025*visibleSize.width);
@@ -131,6 +152,27 @@ void IntroScene::CreatPipe(float dt)
 	this->addChild(pointNode);
 }
 
+/*void IntroScene::pauseGame()
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	auto pause = Button::create("pause.png");
+	pause->setPosition(Vec2(670, 470));
+	pause->addTouchEventListener([&](Ref *sender, Widget::TouchEventType type)
+	{
+		switch (type)
+		{
+		case cocos2d::ui::Widget::TouchEventType::BEGAN:
+			break;
+		case cocos2d::ui::Widget::TouchEventType::ENDED:
+			break;
+
+		}
+	});
+	this->addChild(pause);
+}*/
+
 bool IntroScene::OnContactBegan(const cocos2d::PhysicsContact &contact)
 {
 	PhysicsBody *shapeA  = contact.getShapeA()->getBody();
@@ -161,14 +203,17 @@ bool IntroScene::OnContactBegan(const cocos2d::PhysicsContact &contact)
 
 void IntroScene::update(float dt)
 {
+	rotation = 0.0f, 0.0f;
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	if (isFalling == true)
 	{
 		bird->setPosition(visibleSize.width / 2, bird->getPositionY() - visibleSize.height*0.0025);
+		rotation -= 1;
 	}
 	else
 	{
 		bird->setPosition(visibleSize.width / 2, bird->getPositionY() + visibleSize.height*0.05);
+		rotation += 1;
 	}
 }
 
