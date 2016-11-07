@@ -9,18 +9,22 @@ public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
-    
+
     // a selector callback
 	void IntroScene::update(float);
 	bool IntroScene::OnTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event);
 	void IntroScene::stopFly(float);
+	void IntroScene::pauseGame();
+	void IntroScene::playGame();
 	bool IntroScene::OnContactBegan(const cocos2d::PhysicsContact &contact);
+	float rotation;
     // implement the "static create()" method manually
     CREATE_FUNC(IntroScene);
 private:
 	void IntroScene::CreatPipe(float);
 	cocos2d::Label *label;
 	int score = 0;
+	bool isRunning = false;
 	cocos2d::Sprite *bird;
 	cocos2d::PhysicsWorld *world;
 	bool isFalling = true;

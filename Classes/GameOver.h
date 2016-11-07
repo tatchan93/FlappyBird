@@ -10,6 +10,8 @@ public:
     virtual bool init();
 	void addScore(int score);
 	int score;
+	int hightScore =0;
+	void addHightScore(int hightScore);
     // a selector callback
     // implement the "static create()" method manually
     CREATE_FUNC(GameOver);

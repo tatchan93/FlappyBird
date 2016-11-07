@@ -14,6 +14,9 @@ Scene* GameOver::createScene(int score)
 	layer->score = score;
 	layer->addScore(layer->score);
     // add layer as a child to scene
+	auto layer1 = GameOver::create();
+	layer1->addHightScore(layer1->hightScore);
+	scene->addChild(layer1);
     scene->addChild(layer);
 
     // return the scene
@@ -84,9 +87,37 @@ void GameOver::addScore(int score){
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	__String *teapScore = __String::createWithFormat("%i", score);
-	auto label = Label::createWithTTF(teapScore->getCString(), "fonts/Marker Felt.ttf", visibleSize.height*0.1);
-	label->setPosition(Vec2(origin.x + label->getContentSize().width * 2, origin.y + visibleSize.height - label->getContentSize().height));
+	auto label = Label::createWithTTF(teapScore->getCString(), "fonts/Marker Felt.ttf", 30);
+	label->setPosition(Vec2(origin.x + label->getContentSize().width * 2, origin.y + visibleSize.height - 2.5*label->getContentSize().height));
 	label->setColor(Color3B::RED);
 	this->addChild(label);
 
+	auto label1 = Label::createWithTTF("Score", "fonts/Marker Felt.ttf", 30);
+	label1->setPosition(Vec2(origin.x + label->getContentSize().width * 3, origin.y + visibleSize.height - label->getContentSize().height));
+	label1->setColor(Color3B::RED);
+	this->addChild(label1);
+
+}
+
+void GameOver::addHightScore(int hightScore)
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	__String *teapScore = __String::createWithFormat("%i", hightScore);
+	auto label = Label::createWithTTF(teapScore->getCString(), "fonts/Marker Felt.ttf", 30);
+	label->setPosition(Vec2(origin.x + visibleSize.width - label->getContentSize().width * 5,
+		origin.y + visibleSize.height - 2.5*label->getContentSize().height));
+	label->setColor(Color3B::RED);
+	if (hightScore < score)
+	{
+		hightScore = score;
+	}
+	this->addChild(label);
+
+	auto label1 = Label::createWithTTF("HightScore", "fonts/Marker Felt.ttf", 30);
+	label1->setPosition(Vec2(origin.x + visibleSize.width - label1->getContentSize().width ,
+		origin.y + visibleSize.height - label1->getContentSize().height));
+	label1->setColor(Color3B::RED);
+	this->addChild(label1);
 }

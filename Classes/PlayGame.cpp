@@ -31,6 +31,11 @@ bool PlayGame::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+	setting = Setting::create();
+	setting->setPosition(Vec2(origin.x + visibleSize.width - setting->getContentSize().width,
+		origin.y + visibleSize.height - setting->getContentSize().height));
+	this->addChild(setting);
+
 	auto anhnen = Sprite::create("anhnen.jpg");
 	anhnen->setPosition(visibleSize / 2);
 	anhnen->setScale(1.5);
