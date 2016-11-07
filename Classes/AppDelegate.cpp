@@ -1,7 +1,7 @@
 #include "AppDelegate.h"
 #include "IntroScene.h"
 #include "GameOver.h"
-
+#include "PlayGame.h"
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(720, 520);
@@ -77,9 +77,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     auto scene = IntroScene::createScene();
-
+	auto playScene = PlayGame::createScene();
     // run
-    director->runWithScene(scene);
+    director->runWithScene(playScene);
 
     return true;
 }

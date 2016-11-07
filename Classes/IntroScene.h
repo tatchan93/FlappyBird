@@ -15,7 +15,6 @@ public:
 	bool IntroScene::OnTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event);
 	void IntroScene::stopFly(float);
 	bool IntroScene::OnContactBegan(const cocos2d::PhysicsContact &contact);
-	static int gameScore; 
     // implement the "static create()" method manually
     CREATE_FUNC(IntroScene);
 private:
